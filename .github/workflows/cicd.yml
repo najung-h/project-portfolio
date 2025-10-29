@@ -98,7 +98,7 @@ jobs:
             EOF
 
             # 이미지 경로 치환
-            sudo sed -i "s|\${DOCKERHUB_IMAGE}|${{ secrets.DOCKERHUB_USERNAME }}/najungh:latest|g" docker-compose.prod.yml
+            sudo sed -i "s|\${DOCKERHUB_IMAGE}|${{ secrets.DOCKERHUB_USERNAME }}/najungh_portfolio:latest|g" docker-compose.prod.yml
 
             # 5) 배포
             sudo docker compose -f docker-compose.prod.yml pull
