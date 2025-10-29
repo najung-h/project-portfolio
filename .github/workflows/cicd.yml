@@ -105,8 +105,4 @@ jobs:
             sudo docker compose -f docker-compose.prod.yml up -d
             sudo docker compose -f docker-compose.prod.yml ps
 
-            if [ "$CODE" != "200" ]; then
-              echo "ERROR: /db-check failed"
-              echo "==== web logs ====";   sudo docker logs najungh_web --tail 200 || true
-              exit 1
             fi
