@@ -1,8 +1,8 @@
-name: Full CI/CD - Lint, Build, Push, and Deploy (Compose + MySQL)
+name: Full CI/CD - Lint, Build, Push, and Deploy (Compose)
 
 on:
   push:
-    branches: ["deploy"]
+    branches: ["master"]
 
 jobs:
   build-and-push:
@@ -114,7 +114,7 @@ jobs:
               echo "[deploy:docker-ensure] docker compose 사용 가능합니다. 설치 진행하지 않겠습니다."
             fi
 
-            
+
             # 1) (프라이빗이면) Docker Hub 로그인
             if [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
               echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
