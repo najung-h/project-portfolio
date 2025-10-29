@@ -39,7 +39,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/najungh:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/najungh_portfolio:latest
 
   deploy:
     needs: build-and-push
