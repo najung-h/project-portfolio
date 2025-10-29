@@ -1,5 +1,3 @@
-name: najungh-site
-
 services:
   najungh-app:
     container_name: najungh-app

@@ -63,7 +63,8 @@ jobs:
             fi
 
             # 최신 빌드 & 기동
-            $COMPOSE up -d --build
+            export COMPOSE_PROJECT_NAME=najungh-site
+            $COMPOSE up -d --build --remove-orphans
 
             # nginx 구문검사 및 리로드(인증서 생기면 443 활성화)
             docker exec nginx nginx -t && docker exec nginx nginx -s reload || true
