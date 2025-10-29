@@ -66,9 +66,12 @@ jobs:
             sudo docker version || (echo "Docker daemon not running" && exit 1)
 
             if ! sudo docker compose version >/dev/null 2>&1; then
-              echo "Installing docker compose plugin..."
-              sudo apt-get update -y
-              sudo apt-get install -y docker-compose-plugin
+              echo "Docker Compose plugin not found. Installing..."
+              # Create the plugins directory if it doesn't exist
+              sudo mkdir -p /usr/local/lib/docker/cli-plugins
+              # Download the latest stable release of Docker Compose
+              sudo curl -SL "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s | tr '[:upper:]' '[:lower:]')-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
+              sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
             fi
 
             # 1) (프라이빗이면) Docker Hub 로그인
