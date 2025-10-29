@@ -1,70 +1,26 @@
+version: '3.8'
+
 services:
-  najungh-app:
-    container_name: najungh-app
-    build:
-      context: .
-      dockerfile: Dockerfile
-    restart: unless-stopped
-    environment:
-      UVICORN_WORKERS: "2"
-      UVICORN_PORT: "8000"
-    expose:
-      - "8000"
-    volumes:
-      - ./static:/app/static:ro  # 정적 파일 (FastAPI도 접근)
-    networks:
-      - webnet
-
-  nginx:
-    container_name: nginx
-    image: nginx:1.27-alpine
-    depends_on:
-      - najungh-app
+  web:
+    build: .
+    container_name: fastapi_web
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./static:/usr/share/nginx/html:ro          # 정적 직접 서빙
-      - certbot-etc:/etc/letsencrypt               # 인증서 공유
-      - certbot-webroot:/var/www/certbot           # ACME 웹루트
-    restart: unless-stopped
-    networks:
-      - webnet
-
-  certbot:
-    container_name: certbot
-    image: certbot/certbot:latest
-    environment:
-      CERTBOT_EMAIL: "${CERTBOT_EMAIL}"
-      DOMAIN: "najungh.site"
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-webroot:/var/www/certbot
-    entrypoint: sh
-    command: -c "
-      set -e;
-      echo '===> Certbot init & renew loop';
-      if [ ! -f /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ]; then
-        certbot certonly --webroot -w /var/www/certbot \
-          -d ${DOMAIN} \
-          --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email --non-interactive || true;
-      fi;
-      while :; do
-        certbot renew --webroot -w /var/www/certbot --quiet || true;
-        sleep 12h;
-      done
-      "
-    restart: unless-stopped
+      - "80:8000"
     env_file:
-      - ./.env
-    networks:
-      - webnet
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: mysql:8
+    container_name: mysql_db
+    restart: always
+    env_file:
+      - .env
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
 
 volumes:
-  certbot-etc:
-  certbot-webroot:
-
-networks:
-  webnet:
-    driver: bridge
+  db_data:
