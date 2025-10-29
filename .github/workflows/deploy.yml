@@ -12,6 +12,20 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Debug - list files
+        run: |
+          pwd
+          ls -al
+          find . -maxdepth 3 -type f | sed -n '1,200p' || true
+
+      # 빈 업로드 방지
+      - name: Guard - ensure non-empty
+        run: |
+          set -e
+          COUNT="$(find . -type f | wc -l)"
+          [ "$COUNT" -gt 0 ] || (echo "No files to upload" && exit 1)
+          echo "Found $COUNT files."
+
       - name: Upload to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -28,6 +42,7 @@ jobs:
             static/**
           target: ${{ secrets.EC2_PATH }}
           overwrite: true
+          strip_components: 0
 
       - name: Compose up on EC2
         uses: appleboy/ssh-action@v1
@@ -47,7 +62,7 @@ jobs:
               echo "Docker Compose not found"; exit 1
             fi
 
-            # .env에 CERTBOT_EMAIL 주입 (없으면 생성)
+            # certbot 이메일 주입
             if [ ! -f .env ]; then
               echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" > .env
             elif ! grep -q '^CERTBOT_EMAIL=' .env; then
@@ -57,12 +72,10 @@ jobs:
             # 최신 빌드 & 기동
             $COMPOSE --env-file .env up -d --build
 
-            # 인증서가 생겼다면 무중단 리로드
-            if docker exec nginx test -f /etc/letsencrypt/live/najungh.site/fullchain.pem; then
-              docker exec nginx nginx -t && docker exec nginx nginx -s reload || true
-            fi
+            # nginx 구문검사 및 리로드(인증서 생기면 443 활성화)
+            docker exec nginx nginx -t && docker exec nginx nginx -s reload || true
 
-      - name: Smoke test (HTTPS)
+      - name: Smoke test (HTTP & HTTPS)
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -70,7 +83,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
             set -e
-            # 80 헬스체크(초기 인증서 발급 전에도 통과)
+            # 80: ACME/리다이렉트 전용이지만 /healthz 허용됨
             curl -fsS http://127.0.0.1/healthz | grep -i ok
-            # 443 헬스체크(인증서 발급 완료 후 통과)
+            # 443: 인증서 발급 완료 후 통과 (초기엔 실패 가능하므로 허용)
             curl -kfsS https://127.0.0.1/healthz | grep -i ok || true

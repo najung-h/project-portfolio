@@ -1,4 +1,3 @@
-# ./docker-compose.yml
 name: najungh-site
 
 services:
@@ -13,6 +12,8 @@ services:
       UVICORN_PORT: "8000"
     expose:
       - "8000"
+    volumes:
+      - ./static:/app/static:ro  # 정적 파일 (FastAPI도 접근)
     networks:
       - webnet
 
@@ -23,12 +24,12 @@ services:
       - najungh-app
     ports:
       - "80:80"
-      - "443:443"  
+      - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./static:/usr/share/nginx/html:ro
-      - certbot-etc:/etc/letsencrypt
-      - certbot-webroot:/var/www/certbot
+      - ./static:/usr/share/nginx/html:ro          # 정적 직접 서빙
+      - certbot-etc:/etc/letsencrypt               # 인증서 공유
+      - certbot-webroot:/var/www/certbot           # ACME 웹루트
     restart: unless-stopped
     networks:
       - webnet
@@ -36,25 +37,26 @@ services:
   certbot:
     container_name: certbot
     image: certbot/certbot:latest
+    environment:
+      CERTBOT_EMAIL: "${CERTBOT_EMAIL}"
+      DOMAIN: "najungh.site"
     volumes:
       - certbot-etc:/etc/letsencrypt
       - certbot-webroot:/var/www/certbot
     entrypoint: sh
     command: -c "
-      trap 'exit 0' TERM INT;
-      echo 'Certbot init (if no cert) & renew loop';
-      if [ ! -f /etc/letsencrypt/live/najungh.site/fullchain.pem ]; then
+      set -e;
+      echo '===> Certbot init & renew loop';
+      if [ ! -f /etc/letsencrypt/live/${DOMAIN}/fullchain.pem ]; then
         certbot certonly --webroot -w /var/www/certbot \
-          -d najungh.site \
-          --email $CERTBOT_EMAIL --agree-tos --non-interactive || true;
+          -d ${DOMAIN} \
+          --email ${CERTBOT_EMAIL} --agree-tos --no-eff-email --non-interactive || true;
       fi;
       while :; do
         certbot renew --webroot -w /var/www/certbot --quiet || true;
         sleep 12h;
       done
       "
-    environment:
-      CERTBOT_EMAIL: "${CERTBOT_EMAIL}"
     restart: unless-stopped
     networks:
       - webnet
