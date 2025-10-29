@@ -47,12 +47,15 @@ jobs:
             set -euo pipefail
             cd "${{ secrets.EC2_PATH }}"
 
-            if command -v docker compose >/dev/null 2>&1; then
-              COMPOSE="docker compose"
-            elif command -v docker-compose >/dev/null 2>&1; then
-              COMPOSE="docker-compose"
-            else
-              echo "Docker Compose not found"; exit 1
+            # Define a function to handle both docker compose syntaxes
+            dc() {
+              if command -v docker-compose >/dev/null 2>&1; then
+                docker-compose "$@"
+              elif command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+                docker compose "$@"
+              else
+                echo "ERROR: Neither docker-compose nor docker compose is available." >&2; return 1
+              fi
             fi
 
             # certbot 이메일 주입
@@ -64,7 +67,7 @@ jobs:
 
             # 최신 빌드 & 기동
             export COMPOSE_PROJECT_NAME=najungh-site
-            $COMPOSE up -d --build --remove-orphans
+            dc up -d --build --remove-orphans
 
             # nginx 구문검사 및 리로드(인증서 생기면 443 활성화)
             docker exec nginx nginx -t && docker exec nginx nginx -s reload || true
