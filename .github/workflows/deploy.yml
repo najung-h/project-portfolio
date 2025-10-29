@@ -56,7 +56,7 @@ jobs:
               else
                 echo "ERROR: Neither docker-compose nor docker compose is available." >&2; return 1
               fi
-            fi
+            }
 
             # certbot 이메일 주입
             if [ ! -f .env ]; then
