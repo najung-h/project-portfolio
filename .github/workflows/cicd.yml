@@ -56,6 +56,7 @@ jobs:
 
             APP_DIR="/home/ubuntu/najungh"
             mkdir -p "$APP_DIR"
+            mkdir -p "$APP_DIR/nginx/conf.d"
             cd "$APP_DIR"
 
             # 0) Docker 데몬/Compose 보장
@@ -74,6 +75,46 @@ jobs:
               sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
             fi
 
+
+
+            # Docker 설치 여부 확인
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "[deploy:docker-ensure] Docker CE 설치되어 있지 않습니다. 설치하겠습니다..."
+              # Docker CE 설치 없을 때 설치 - 기존에 수동으로 하는 법을 정리해놨는데, 그것을 CI-CD로도 자동화하겠습니다. 아래 코드가 궁금하다면 정현쓰 티스토리 참고하세요
+              sudo apt-get update
+              sudo apt-get install -y ca-certificates curl gnupg lsb-release
+
+              sudo mkdir -p /etc/apt/keyrings
+              curl -fsSL https://download.docker.com/linux/ubuntu/gpg | \
+                sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+              sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+              echo \
+                "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] \
+                https://download.docker.com/linux/ubuntu \
+                $(lsb_release -cs) stable" | \
+                sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+              sudo apt-get update
+              sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+            else
+              echo "[deploy:docker-ensure] Docker CE 설치되어 있습니다."
+            fi
+
+            # 도커 서비스가 부팅 시 자동으로 시작되도록 설정하고 즉시 시작하게
+            sudo systemctl enable --now docker
+            sudo docker version || (echo "[deploy:docker-ensure] Docker 데몬이 실행 중이 아닙니다" && exit 1)
+
+            # docker compose를 사용해서 배포할 예정이기 때문에, docker-compose 설치 확인
+            if ! sudo docker compose version >/dev/null 2>&1; then
+              echo "[deploy:docker-ensure] docker-compose 플러그인 설치하겠습니다..."
+              sudo apt-get update -y
+              sudo apt-get install -y docker-compose-plugin
+            else
+              echo "[deploy:docker-ensure] docker compose 사용 가능합니다. 설치 진행하지 않겠습니다."
+            fi
+
+            
             # 1) (프라이빗이면) Docker Hub 로그인
             if [ -n "${{ secrets.DOCKERHUB_TOKEN }}" ]; then
               echo "${{ secrets.DOCKERHUB_TOKEN }}" | sudo docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
@@ -82,7 +123,45 @@ jobs:
             # 2) Compose용 외부 네트워크(최초 1회)
             sudo docker network create appnet || true
 
-            # 3) .env 생성 (Secrets 주입)
+            # .env 생성 (Secrets 주입) 생략
+
+            # 3) nginx 설정파일 생성
+            cat > nginx/conf.d/default.conf << 'EOF'
+            server {
+              listen 80;
+              server_name najungh.site;
+              return 301 https://$host$request_uri;
+            }
+
+            server {
+              listen 443 ssl http2;
+              server_name najungh.site;
+ 
+              ssl_certificate /etc/letsencrypt/live/najungh.site/fullchain.pem;
+              ssl_certificate_key /etc/letsencrypt/live/najungh.site/privkey.pem;
+
+              ssl_session_timeout 1d;
+              ssl_session_cache shared:MozSSL:10m;
+              ssl_session_tickets off;
+              ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+
+              add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always; 
+
+              location /static/ {
+                alias /wishfast/staticfiles/;
+                try_files $uri $uri/ =404;
+              }
+
+              location / {
+                proxy_pass http://web:8000;
+                proxy_http_version 1.1;
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+              }
+            }
+            EOF
            
 
             # 4) docker-compose.prod.yml 생성 (Compose v2: version 키 생략)
@@ -92,9 +171,28 @@ jobs:
                 image: ${DOCKERHUB_IMAGE}
                 container_name: najungh_web
                 restart: always
-                ports:
-                  - "80:8000"
+                expose:
+                  - "8000"
+                networks: [appnet]
             
+              nginx:
+                image: nginx:1.27-alpine
+                container_name: nginx_edge
+                restart: always
+                depends_on:
+                  - web
+                ports:
+                  - "80:80"
+                  - "443:443"
+                volumes:
+                  - ./nginx/conf.d:/etc/nginx/conf.d:ro
+                  - /etc/letsencrypt:/etc/letsencrypt:ro
+                  - ./staticfiles:/wishfast/staticfiles:ro
+                networks: [appnet]
+
+            networks:   
+              appnet:
+                  external: true
             EOF
 
             # 이미지 경로 치환
