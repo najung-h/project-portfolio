@@ -1,0 +1,68 @@
+# ./docker-compose.yml
+name: najungh-site
+
+services:
+  najungh-app:
+    container_name: najungh-app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      UVICORN_WORKERS: "2"
+      UVICORN_PORT: "8000"
+    expose:
+      - "8000"
+    networks:
+      - webnet
+
+  nginx:
+    container_name: nginx
+    image: nginx:1.27-alpine
+    depends_on:
+      - najungh-app
+    ports:
+      - "80:80"
+      - "443:443"  
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./static:/usr/share/nginx/html:ro
+      - certbot-etc:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
+    restart: unless-stopped
+    networks:
+      - webnet
+
+  certbot:
+    container_name: certbot
+    image: certbot/certbot:latest
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-webroot:/var/www/certbot
+    entrypoint: sh
+    command: -c "
+      trap 'exit 0' TERM INT;
+      echo 'Certbot init (if no cert) & renew loop';
+      if [ ! -f /etc/letsencrypt/live/najungh.site/fullchain.pem ]; then
+        certbot certonly --webroot -w /var/www/certbot \
+          -d najungh.site \
+          --email $CERTBOT_EMAIL --agree-tos --non-interactive || true;
+      fi;
+      while :; do
+        certbot renew --webroot -w /var/www/certbot --quiet || true;
+        sleep 12h;
+      done
+      "
+    environment:
+      CERTBOT_EMAIL: "${CERTBOT_EMAIL}"
+    restart: unless-stopped
+    networks:
+      - webnet
+
+volumes:
+  certbot-etc:
+  certbot-webroot:
+
+networks:
+  webnet:
+    driver: bridge

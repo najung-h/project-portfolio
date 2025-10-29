@@ -1,0 +1,76 @@
+name: Deploy najungh.site
+
+on:
+  push:
+    branches: [ "dev" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Upload to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: |
+            .dockerignore
+            docker-compose.yml
+            Dockerfile
+            nginx.conf
+            requirements.txt
+            server.py
+            static/**
+          target: ${{ secrets.EC2_PATH }}
+          overwrite: true
+
+      - name: Compose up on EC2
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -euo pipefail
+            cd "${{ secrets.EC2_PATH }}"
+
+            if command -v docker compose >/dev/null 2>&1; then
+              COMPOSE="docker compose"
+            elif command -v docker-compose >/dev/null 2>&1; then
+              COMPOSE="docker-compose"
+            else
+              echo "Docker Compose not found"; exit 1
+            fi
+
+            # .env에 CERTBOT_EMAIL 주입 (없으면 생성)
+            if [ ! -f .env ]; then
+              echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" > .env
+            elif ! grep -q '^CERTBOT_EMAIL=' .env; then
+              echo "CERTBOT_EMAIL=${{ secrets.CERTBOT_EMAIL }}" >> .env
+            fi
+
+            # 최신 빌드 & 기동
+            $COMPOSE --env-file .env up -d --build
+
+            # 인증서가 생겼다면 무중단 리로드
+            if docker exec nginx test -f /etc/letsencrypt/live/najungh.site/fullchain.pem; then
+              docker exec nginx nginx -t && docker exec nginx nginx -s reload || true
+            fi
+
+      - name: Smoke test (HTTPS)
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            set -e
+            # 80 헬스체크(초기 인증서 발급 전에도 통과)
+            curl -fsS http://127.0.0.1/healthz | grep -i ok
+            # 443 헬스체크(인증서 발급 완료 후 통과)
+            curl -kfsS https://127.0.0.1/healthz | grep -i ok || true

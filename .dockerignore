@@ -1,5 +1,7 @@
 # 가상환경 제외
 venv/
+.env
+.venv
 
 # 파이썬 캐시
 __pycache__/
@@ -15,3 +17,8 @@ __pycache__/
 # Git 관련
 .git
 .gitignore
+.github
+
+
+build/
+dist/
