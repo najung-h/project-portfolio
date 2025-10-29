@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>나정현 · 포트폴리오</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; font-family: Pretendard, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", Arial, "Apple SD Gothic Neo", "Malgun Gothic", "맑은 고딕", sans-serif; }
+    body { background: #f7f8fa; color: #111; line-height: 1.6; }
+    a { color: #1f6feb; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .container { max-width: 980px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    /* Header */
+    .header {
+      background: linear-gradient(180deg, #ffffff 0%, #f6f8ff 100%);
+      border: 1px solid #e6eaf2;
+      border-radius: 20px;
+      padding: 28px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.04);
+    }
+    .name { font-size: 28px; font-weight: 800; letter-spacing: 0.2px; }
+    .tagline { font-size: 16px; color: #444; }
+    .contact { display: flex; flex-wrap: wrap; gap: 10px; font-size: 14px; color: #333; }
+    .pill { background: #eef2ff; color: #1e2a78; padding: 4px 10px; border-radius: 999px; border: 1px solid #dfe6ff; }
+
+    /* Grid sections */
+    .grid { display: grid; gap: 18px; margin-top: 20px; }
+    @media (min-width: 920px) {
+      .grid-2 { grid-template-columns: 1fr 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+    }
+
+    .card {
+      background: #fff; border: 1px solid #e6eaf2; border-radius: 16px;
+      padding: 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.03);
+    }
+    .card h2 { margin: 0 0 12px; font-size: 18px; }
+    .card h3 { margin: 10px 0 6px; font-size: 16px; }
+    .muted { color: #666; font-size: 13px; }
+    .list { margin: 8px 0 0 0; padding-left: 18px; }
+    .list li { margin: 6px 0; }
+
+    /* Right column stacking */
+    .right-col { display: grid; gap: 18px; }
+
+    /* Link cards grid */
+    .link-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+      gap:12px; margin-top:14px;
+    }
+    .link-card {
+      display:flex; align-items:center; gap:12px;
+      border:1px solid #e6eaf2; border-radius:14px;
+      padding:14px 16px; background:#ffffff;
+      text-decoration:none;
+    }
+    .link-icon { width:40px; height:40px; border-radius:10px; display:grid; place-items:center; font-size:20px; }
+    .link-icon.github { background:#0d1117; color:#fff; }
+    .link-icon.tistory { background:#fbe7e7; color:#d94848; }
+    .arrow { margin-left:auto; font-size:18px; color:#5b83ff; }
+
+    /* Soft cards for Social Activity */
+    .social-grid {
+      display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px; margin-top: 12px;
+    }
+    .soft-card { background:#f9faff; border:1px solid #e3e8ff; border-radius:12px; padding:14px; }
+    .soft-card h3 { margin:0; font-size:16px; }
+    .soft-card p { margin:4px 0 0; color:#555; }
+
+    /* Service table */
+    .table { width:100%; border-collapse: collapse; text-align:left; }
+    .table thead { background:#f0f2ff; }
+    .table th, .table td { padding: 10px; border-bottom: 1px solid #dddddd; }
+    .table td a { font-weight:600; }
+
+    /* Footer */
+    .footer { text-align: center; color: #7a7a7a; font-size: 12px; margin-top: 36px; }
+
+    .badge {
+      display: inline-block;
+      margin: 4px 6px 4px 0;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1e2a78;
+      background: #eef2ff;
+      border: 1px solid #dfe6ff;
+      border-radius: 999px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      transition: all 0.2s ease;
+    }
+    .badge:hover {
+      background: #dfe6ff;
+      transform: translateY(-2px);
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Header -->
+    <section class="header">
+      <div class="name">나정현</div>
+      <div class="tagline">
+        데이터 분석 및 웹 개발 능력을 바탕으로 금융업의 DX / AX를 이끌고 싶습니다.
+      </div>
+      <div class="contact">
+        <span class="pill">Github: <a href="https://github.com/najung-h" target="_blank" rel="noopener">najung-h</a></span>
+        <span class="pill">Email: <a href="mailto:junghyun.na321@gmail.com">junghyun.na321@gmail.com</a></span>
+        <span class="pill">Tistory: <a href="https://hadahae2024.tistory.com" target="_blank" rel="noopener">hadahae2024</a></span>
+      </div>
+    </section>
+
+    <!-- Top grid: Left = Education / Right = Certifications + Links -->
+    <div class="grid grid-2">
+
+      <!-- Left: Education -->
+      <section class="card" style="padding:28px;">
+        <h2 style="margin-bottom:16px; font-size:22px;">🎓 Education</h2>
+
+        <div style="display:flex; flex-direction:column; gap:18px;">
+
+          <!-- 고려대학교 -->
+          <div style="position:relative; padding-left:18px;">
+            <div style="position:absolute; left:0; top:4px; width:10px; height:10px; background:#5b83ff; border-radius:50%;"></div>
+            <h3 style="margin:0; font-size:17px; font-weight:700;">고려대학교 · 가정교육과 / 수학과</h3>
+            <p style="margin:2px 0 6px; color:#777; font-size:13px;">📅 2020.03 – 2025.08</p>
+            <div style="background:#f9faff; border:1px solid #e6eaf2; border-radius:10px; padding:12px 14px;">
+              <ul style="margin:0; padding-left:20px; color:#444; font-size:14px;">
+                <li>180학점 이수 (이중전공)</li>
+                <li><strong>BADA (Business Analytics & Data Association)</strong> · 부학회장</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- SSAFY -->
+          <div style="position:relative; padding-left:18px;">
+            <div style="position:absolute; left:0; top:4px; width:10px; height:10px; background:#00a0ff; border-radius:50%;"></div>
+            <h3 style="margin:0; font-size:17px; font-weight:700;">SSAFY (삼성청년SW·AI아카데미)</h3>
+            <p style="margin:2px 0 6px; color:#777; font-size:13px;">📅 2025.07 – 현재 · Python 트랙</p>
+            <div style="background:#f9faff; border:1px solid #e6eaf2; border-radius:10px; padding:12px 14px;">
+              <ul style="margin:0; padding-left:20px; color:#444; font-size:14px;">
+                <li>8월 이달의 동료 🏅</li>
+                <li>8월 최우수 스터디 수상 🥇</li>
+                <li>삼성 SW역량테스트 A형 취득 💻</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Right: stacked (Certifications & Links) -->
+      <div class="right-col">
+
+        <!-- Certifications -->
+        <section class="card">
+          <h2>자격증 & 어학</h2>
+          <div>
+            <span class="badge">TOEIC 905</span>
+            <span class="badge">OPIC IH</span>
+            <span class="badge">ADsP</span>
+            <span class="badge">SQLD</span>
+            <!-- <span class="badge">정보처리기사 필기합격</span> -->
+          </div>
+        </section>
+
+        <!-- Links -->
+        <section class="card">
+          <h2>🔗 주요 링크</h2>
+          <p class="muted" style="margin-top:4px;">프로젝트와 글 모음은 아래에서 바로 확인할 수 있어요.</p>
+
+          <div class="link-grid">
+            <!-- GitHub -->
+            <a class="link-card" href="https://github.com/najung-h" target="_blank" rel="noopener">
+              <div class="link-icon github">🐙</div>
+              <div>
+                <div style="font-weight:700; color:#111;">GitHub 프로필</div>
+                <div class="muted" style="font-size:13px;">najung-h · repos · stars</div>
+              </div>
+              <span class="arrow">↗</span>
+            </a>
+
+            <!-- Tistory -->
+            <a class="link-card" href="https://hadahae2024.tistory.com/" target="_blank" rel="noopener">
+              <div class="link-icon tistory">📝</div>
+              <div>
+                <div style="font-weight:700; color:#111;">Tistory 블로그</div>
+                <div class="muted" style="font-size:13px;">기술 인사이트 · 지식정리 · SSAFY 갓생일기</div>
+              </div>
+              <span class="arrow">↗</span>
+            </a>
+          </div>
+
+          <!-- <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+            <a href="https://github.com/najung-h?tab=repositories" target="_blank" rel="noopener"
+              class="pill">🔍 최신 Repos</a>
+            <a href="https://hadahae2024.tistory.com/" target="_blank" rel="noopener"
+              class="pill">⭐ 인기 글 모아보기</a>
+          </div> -->
+        </section>
+      </div>
+    </div>
+
+    <!-- Work -->
+    <section class="card" style="margin-top:20px; padding:28px;">
+      <h2 style="margin-bottom:18px; font-size:22px;">Work Experience</h2>
+
+      <div style="border-left:4px solid #5b83ff; padding-left:14px; margin-bottom:18px;">
+        <h3 style="margin:0; font-size:18px; font-weight:700;">IBK 기업은행 · 디지털 직군</h3>
+        <p style="margin:4px 0 0; color:#666; font-size:14px;">
+          IBK경제연구소 중기산업연구실 · 청년인턴
+        </p>
+        <p style="margin:6px 0 10px; color:#777; font-size:13px;">📅 2024.01 – 2024.02</p>
+
+        <ul style="list-style:none; padding:0; margin:0;">
+          <li style="margin:8px 0; display:flex; align-items:flex-start;">
+            <span style="color:#5b83ff; margin-right:8px;">•</span>
+            <span><strong>IBK경제브리프 작성:</strong> 온디바이스 AI 시장 개화 및 금융업 시사점 분석</span>
+          </li>
+          <li style="margin:8px 0; display:flex; align-items:flex-start;">
+            <span style="color:#5b83ff; margin-right:8px;">•</span>
+            <span><strong>콘텐츠 고도화 프로젝트:</strong> 스타트업 실이용자 데이터 기반 콘텐츠 고도화 전략 제안</span>
+          </li>
+          <li style="margin:8px 0; display:flex; align-items:flex-start;">
+            <span style="color:#5b83ff; margin-right:8px;">•</span>
+            <span><strong>디지털 점포 기획:</strong> DT 흐름에 맞는 미래형 은행 영업점 모델 제안</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Social Activity (FULL WIDTH) -->
+    <section class="card" style="margin-top:20px;">
+      <h2>Social Activity</h2>
+      <div class="social-grid">
+        <div class="soft-card">
+          <h3>🪘 고대농악대</h3>
+          <p>2년간 활동 · 정기 공연 및 초청 외부 공연 기획</p>
+        </div>
+        <div class="soft-card">
+          <h3>⚽ VAMOS FC</h3>
+          <p>1년 6개월간 활동 · 리더십 및 협업 강화</p>
+        </div>
+        <div class="soft-card">
+          <h3>💬 성북구 건강가정지원센터 멘토</h3>
+          <p>1년간 활동 · 아동 대상 정서·학습 멘토링</p>
+        </div>
+        <div class="soft-card">
+          <h3>📚 삼성드림클래스 멘토</h3>
+          <p>1년간 활동 · 중학생 대상 학습 멘토링</p>
+        </div>
+        <div class="soft-card">
+          <h3>🧮 동성고 수학 교육봉사</h3>
+          <p>총 60시간 · 학습 진단 및 맞춤형 지도</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Services -->
+    <section class="card" style="margin-top:20px;">
+      <h2>Service</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>서비스명</th>
+            <th>설명</th>
+            <th>링크</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🚇 쉽길</td>
+            <td>지하철 에스컬레이터 경로 안내 서비스</td>
+            <td><a href="https://wisheasy.site" target="_blank">wisheasy.site</a></td>
+          </tr>
+          <tr>
+            <td>🚇 뛸까말까</td>
+            <td>지하철 실시간 도착 정보 안내 서비스</td>
+            <td><a href="https://runornot.site" target="_blank">runornot.site</a></td>
+          </tr>
+          <tr>
+            <td>🧑‍💻 나정현</td>
+            <td>소통 페이지</td>
+            <td><a href="https://najungh.site" target="_blank">najungh.site</a></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Skills -->
+    <section class="card" style="margin-top:20px;">
+      <h2>Skills</h2>
+
+      <!-- Languages -->
+      <h3 align="center">Languages</h3>
+      <p align="center">
+        <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white"/>
+        <img src="https://img.shields.io/badge/R-276DC3?style=for-the-badge&logo=r&logoColor=white"/>
+      </p>
+      <br>
+
+      <!-- Frontend -->
+      <h3 align="center">Frontend & Frameworks</h3>
+      <p align="center">
+        <img src="https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white"/>
+        <img src="https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white"/>
+        <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black"/>
+        <img src="https://img.shields.io/badge/Bootstrap-7952B3?style=for-the-badge&logo=bootstrap&logoColor=white"/>
+      </p>
+      <br>
+
+      <!-- Backend -->
+      <h3 align="center">Backend & Frameworks</h3>
+      <p align="center">
+        <img src="https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white"/>
+        <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white"/>
+        <img src="https://img.shields.io/badge/ASGI-000000?style=for-the-badge&logo=fastapi&logoColor=white"/>   
+        <img src="https://img.shields.io/badge/Uvicorn-2E86C1?style=for-the-badge&logo=uvicorn&logoColor=white"/>   
+        <img src="https://img.shields.io/badge/Gunicorn-499848?style=for-the-badge&logo=gunicorn&logoColor=white"/> 
+      </p>
+      <br>
+
+      <!-- Data & ML -->
+      <h3 align="center">Data & ML</h3>
+      <p align="center">
+        <img src="https://img.shields.io/badge/pandas-150458?style=for-the-badge&logo=pandas&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Numpy-013243?style=for-the-badge&logo=numpy&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Matplotlib-11557C?style=for-the-badge&logo=plotly&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Seaborn-268BD2?style=for-the-badge&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Tableau-E97627?style=for-the-badge&logo=tableau&logoColor=white"/>
+      </p>
+      <p align="center">
+        <img src="https://img.shields.io/badge/scikit--learn-F7931E?style=for-the-badge&logo=scikitlearn&logoColor=white"/>
+        <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white"/>
+        <img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Hugging%20Face-FEE440?style=for-the-badge&logo=huggingface&logoColor=black"/>
+        <img src="https://img.shields.io/badge/Optuna-0F4C81?style=for-the-badge&logo=optuna&logoColor=white"/>
+      </p>
+      <br>
+
+      <!-- Databases -->
+      <h3 align="center">Databases</h3>
+      <p align="center">
+        <img src="https://img.shields.io/badge/SQL-336791?style=for-the-badge&logo=postgresql&logoColor=white"/>
+        <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white"/>
+        <img src="https://img.shields.io/badge/SQLite-003B57?style=for-the-badge&logo=sqlite&logoColor=white"/>
+      </p>
+      <br>
+
+      <!-- DevOps -->
+      <h3 align="center">DevOps & CI/CD</h3>
+      <p align="center">
+        <img src="https://img.shields.io/badge/YAML-000000?style=for-the-badge&logoColor=white"/>
+        <img src="https://img.shields.io/badge/GitHub%20Actions-2088FF?style=for-the-badge&logo=githubactions&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Ruff-FD5E5A?style=for-the-badge&logo=ruff&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Let's%20Encrypt-003A70?style=for-the-badge&logo=letsencrypt&logoColor=white"/>
+      </p>
+      <p align="center">
+        <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Docker%20Compose-2496ED?style=for-the-badge&logo=docker&logoColor=white"/>
+        <img src="https://img.shields.io/badge/AWS%20EC2-FF9900?style=for-the-badge&logo=amazon-ec2&logoColor=white"/>
+        <img src="https://img.shields.io/badge/AWS%20RDS-527FFF?style=for-the-badge&logo=amazon-rds&logoColor=white"/>
+      </p>
+      <br>
+
+      <!-- Tools -->
+      <h3 align="center">Tools & Design</h3>
+      <p align="center">
+        <img src="https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white"/>
+        <img src="https://img.shields.io/badge/VS%20Code-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Notion-000000?style=for-the-badge&logo=notion&logoColor=white"/>
+      </p>
+      <br>
+
+      <!-- Etc -->
+      <h3 align="center">Etc.</h3>
+      <p align="center">
+        <img src="https://img.shields.io/badge/MCP-4A90E2?style=for-the-badge&logoColor=white"/>
+        <img src="https://img.shields.io/badge/Gemini%20CLI-00C853?style=for-the-badge&logo=googlegemini&logoColor=white"/>
+        <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white"/>
+      </p>
+    </section>
+
+    <section class="footer">
+      <p>© 2025. 나정현. All rights reserved.</p>
+    </section>
+  </div>
+</body>
+</html>
