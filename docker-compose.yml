@@ -58,6 +58,8 @@ services:
       done
       "
     restart: unless-stopped
+    env_file:
+      - ./.env
     networks:
       - webnet
 
