@@ -55,6 +55,7 @@ jobs:
             set -e
 
             APP_DIR="/home/ubuntu/najungh"
+            sudo chown -R najungh:najungh /home/ubuntu
             mkdir -p "$APP_DIR"
             mkdir -p "$APP_DIR/nginx/conf.d"
             cd "$APP_DIR"
